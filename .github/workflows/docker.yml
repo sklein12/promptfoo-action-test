@@ -104,7 +104,7 @@ jobs:
 
       - name: Extract evalId and make curl request
         run: |
-          response=$(curl -s http://localhost:3500/api/results)
+          response=$(curl -s http://localhost:3400/api/results)
           echo "Response: $response"
 
           # Use jq to extract the array length
