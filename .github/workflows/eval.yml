@@ -1,0 +1,30 @@
+# .github/workflows/pr-trigger.yml
+name: PR Trigger Action
+
+on:
+  pull_request:
+    branches:
+      - main  # Adjust to match the branch your PR targets
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run promptfoo evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          config: '.github/promptfooconfig.yml'
+
+      - name: Extract evalId and make curl request
+        run: |
+         # Extract evalId from the log
+         eval_id=$(grep -oP 'evalId=\K[\w-]+' <(echo "${{ steps.your_previous_step.outputs.console_output }}"))
+    
+         # Check if evalId was found
+         if [ -z "$eval_id" ]; then
+           echo "Failed to extract evalId"
+           exit 1
+         fi
+    
+         echo "Extracted evalId: $eval_id"
