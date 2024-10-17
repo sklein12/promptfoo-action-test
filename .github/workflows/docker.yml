@@ -113,7 +113,9 @@ jobs:
       #     config: '.github/promptfooconfig.yaml'
       #     prompts: '.github/prompts.txt'
       - name: run promptfoo eval
-        run: npm run local -- eval -c .github/promptfooconfig.yaml --share
+        run: |
+          npm install
+          npm run local -- eval -c .github/promptfooconfig.yaml --share
 
       - name: Extract evalId and make curl request
         run: |
