@@ -1,0 +1,35 @@
+# .github/workflows/pr-trigger.yml
+name: PR Trigger Action
+
+on:
+  pull_request:
+    branches:
+      - main  # Adjust to match the branch your PR targets
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: run promptfoo eval
+        id: eval
+        run: |
+          npm install
+          npm run local -- eval -c .github/promptfooconfig.yml --share
+
+      - name: Extract evalId and make curl request
+        run: |
+          response=$(curl -s http://localhost:8500/api/results)
+          echo "Response: $response"
+
+          # Use jq to extract the array length
+          count=$(echo "$response" | jq '.data | length')
+          echo "Array Length: $count"
+
+          # Check if the count is exactly 1
+          if [ "$count" -ne 1 ]; then
+            echo "Error: Expected 1 entry, but got $count"
+            exit 1  # Fail the job if count is not 1
+          fi

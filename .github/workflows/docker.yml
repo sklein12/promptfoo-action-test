@@ -15,19 +15,9 @@ run-name: |
   by @${{ github.actor }}
 
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
   pull_request:
     branches:
-      - main
-    paths:
-      - 'Dockerfile'
-  push:
-    branches:
-      - main
-    paths:
-      - 'Dockerfile'
+      - main  # Adjust to match the branch your PR targets
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -106,42 +96,26 @@ jobs:
             echo -e "\nHealth check failed after multiple attempts" >&2
             exit 1
           fi
-      # - name: Run promptfoo evaluation
-      #   uses: promptfoo/promptfoo-action@v1
-      #   with:
-      #     github-token: ${{secrets.GITHUB_TOKEN}}
-      #     config: '.github/promptfooconfig.yaml'
-      #     prompts: '.github/prompts.txt'
       - name: run promptfoo eval
+        id: eval
         run: |
-          pwd
-          ls -al
           npm install
           npm run local -- eval -c .github/promptfooconfig.yml --share
 
       - name: Extract evalId and make curl request
         run: |
-         # Extract evalId from the log
-         eval_id=$(grep -oP 'evalId=\K[\w-]+' <(echo "${{ steps.your_previous_step.outputs.console_output }}"))
-    
-         # Check if evalId was found
-         if [ -z "$eval_id" ]; then
-           echo "Failed to extract evalId"
-           exit 1
-         fi
-    
-         echo "Extracted evalId: $eval_id"
-    
-         # Make the curl request and store the HTTP status code
-         status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3400/api/results/${eval_id}")
-    
-         # Check if the request was successful
-         if [ "$status_code" -eq 200 ]; then
-           echo "Curl request successful with status code 200."
-         else
-           echo "Curl request failed with status code $status_code."
-           exit 1
-         fi
+          response=$(curl -s http://localhost:3400/api/results)
+          echo "Response: $response"
+
+          # Use jq to extract the array length
+          count=$(echo "$response" | jq '.data | length')
+          echo "Array Length: $count"
+
+          # Check if the count is exactly 1
+          if [ "$count" -ne 1 ]; then
+            echo "Error: Expected 1 entry, but got $count"
+            exit 1  # Fail the job if count is not 1
+          fi
 
       - name: Stop and remove Docker container
         if: always()
