@@ -1,0 +1,7 @@
+'Summarize this: {{text}}'
+---
+'Summarize this: {{text}}'
+---
+'Do not Summarize this: {{text}}'
+---
+'This is the prompt {{text}}'
