@@ -109,7 +109,32 @@ jobs:
       - name: Run promptfoo evaluation
         uses: promptfoo/promptfoo-action@v1
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           config: '.github/promptfooconfig.yaml'
+
+      - name: Extract evalId and make curl request
+        run: |
+         # Extract evalId from the log
+         eval_id=$(grep -oP 'evalId=\K[\w-]+' <(echo "${{ steps.your_previous_step.outputs.console_output }}"))
+    
+         # Check if evalId was found
+         if [ -z "$eval_id" ]; then
+           echo "Failed to extract evalId"
+           exit 1
+         fi
+    
+         echo "Extracted evalId: $eval_id"
+    
+         # Make the curl request and store the HTTP status code
+         status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3400/api/results/${eval_id}")
+    
+         # Check if the request was successful
+         if [ "$status_code" -eq 200 ]; then
+           echo "Curl request successful with status code 200."
+         else
+           echo "Curl request failed with status code $status_code."
+           exit 1
+         fi
 
       - name: Stop and remove Docker container
         if: always()
