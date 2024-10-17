@@ -106,18 +106,17 @@ jobs:
             echo -e "\nHealth check failed after multiple attempts" >&2
             exit 1
           fi
-      # - name: Run promptfoo evaluation
-      #   uses: promptfoo/promptfoo-action@v1
-      #   with:
-      #     github-token: ${{secrets.GITHUB_TOKEN}}
-      #     config: '.github/promptfooconfig.yaml'
-      #     prompts: '.github/prompts.txt'
-      - name: run promptfoo eval
-        run: |
-          pwd
-          ls -al
-          npm install
-          npm run local -- eval -c .github/promptfooconfig.yml --share
+      - name: Run promptfoo evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          config: '.github/promptfooconfig.yml'
+      # - name: run promptfoo eval
+      #   run: |
+      #     pwd
+      #     ls -al
+      #     npm install
+      #     npm run local -- eval -c .github/promptfooconfig.yml --share
 
       - name: Extract evalId and make curl request
         run: |
