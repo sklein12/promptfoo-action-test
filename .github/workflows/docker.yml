@@ -107,7 +107,7 @@ jobs:
 
       - name: Run promptfoo eval and share
         run: |
-          PROMPTFOO_REMOTE_API_BASE_URL=http://localhost:3400 PROMPTFOO_REMOTE_APP_BASE_URL=http://localhost:3400 npx promptfoo@latest eval -c examples/simple-cli/promptfooconfig.yaml --share
+          PROMPTFOO_REMOTE_API_BASE_URL=http://localhost:3400 PROMPTFOO_REMOTE_APP_BASE_URL=http://localhost:3400 npx promptfoo@latest eval -c .github/promptfooconfig.yml --share
       
 
       - name: Stop and remove Docker container
