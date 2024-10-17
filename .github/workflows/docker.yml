@@ -67,7 +67,7 @@ jobs:
           platforms: linux/amd64
 
       - name: Run Docker container for testing
-        run: docker run -d --name promptfoo-container -p 3000:3000 local-test-image:latest
+        run: docker run -d --name promptfoo-container -p 3400:3000 local-test-image:latest
 
       - name: Verify Python and promptfoo
         run: |
@@ -89,7 +89,7 @@ jobs:
         run: |
           # Loop to check if the server is up
           for i in {1..10}; do
-            if curl -f http://localhost:3000/health; then
+            if curl -f http://localhost:3400/health; then
               echo -e "\nHealth check passed"
               HEALTH_CHECK_PASS=true
               break
@@ -107,8 +107,8 @@ jobs:
 
       - name: Run promptfoo eval and share
         run: |
-          npx promptfoo@latest eval -c examples/simple-cli/promptfooconfig.yaml
-          PROMPTFOO_REMOTE_API_BASE_URL=http://localhost:3000 PROMPTFOO_REMOTE_APP_BASE_URL=http://localhost:3000 npx promptfoo@latest share -y
+          PROMPTFOO_REMOTE_API_BASE_URL=http://localhost:3400 PROMPTFOO_REMOTE_APP_BASE_URL=http://localhost:3400 npx promptfoo@latest eval -c examples/simple-cli/promptfooconfig.yaml
+      
 
       - name: Stop and remove Docker container
         if: always()
