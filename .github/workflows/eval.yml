@@ -13,17 +13,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run promptfoo evaluation
-        uses: promptfoo/promptfoo-action@v1
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          config: '.github/promptfooconfig.yml'
-          prompts: '.github/prompts.txt'
+      - name: run promptfoo eval
+        id: eval
+        run: |
+          npm install
+          npm run local -- eval -c .github/promptfooconfig.yml --share
 
       - name: Extract evalId and make curl request
         run: |
          # Extract evalId from the log
-         eval_id=$(grep -oP 'evalId=\K[\w-]+' <(echo "${{ steps.your_previous_step.outputs.console_output }}"))
+         eval_id=$(grep -oP 'evalId=\K[\w-]+' <(echo "${{ join(steps.eval.outputs.*, ' ') }}"))
     
          # Check if evalId was found
          if [ -z "$eval_id" ]; then
