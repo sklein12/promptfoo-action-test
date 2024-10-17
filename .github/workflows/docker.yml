@@ -115,9 +115,9 @@ jobs:
       - name: run promptfoo eval
         run: |
           pwd
-          ls
+          ls -al
           npm install
-          npm run local -- eval -c ./.github/promptfooconfig.yaml --share
+          npm run local -- eval -c .github/promptfooconfig.yml --share
 
       - name: Extract evalId and make curl request
         run: |
