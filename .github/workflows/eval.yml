@@ -21,13 +21,15 @@ jobs:
 
       - name: Extract evalId and make curl request
         run: |
-         # Extract evalId from the log
-         eval_id=$(grep -oP 'evalId=\K[\w-]+' <(echo "${{ join(steps.eval.outputs.*, ' ') }}"))
-    
-         # Check if evalId was found
-         if [ -z "$eval_id" ]; then
-           echo "Failed to extract evalId"
-           exit 1
-         fi
-    
-         echo "Extracted evalId: $eval_id"
+          response=$(curl -s http://localhost:8500/api/results)
+          echo "Response: $response"
+
+          # Use jq to extract the array length
+          count=$(echo "$response" | jq '.data | length')
+          echo "Array Length: $count"
+
+          # Check if the count is exactly 1
+          if [ "$count" -ne 1 ]; then
+            echo "Error: Expected 1 entry, but got $count"
+            exit 1  # Fail the job if count is not 1
+          fi
