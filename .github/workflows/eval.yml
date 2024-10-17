@@ -15,6 +15,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           config: '.github/promptfooconfig.yml'
+          prompts: '.github/prompts.txt'
 
       - name: Extract evalId and make curl request
         run: |
