@@ -37,6 +37,8 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  PROMPTFOO_REMOTE_API_BASE_URL: 'http://localhost:3400'
+  PROMPTFOO_REMOTE_APP_BASE_URL: 'http://localhost:3400'
 
 permissions:
   contents: read
@@ -104,11 +106,10 @@ jobs:
             echo -e "\nHealth check failed after multiple attempts" >&2
             exit 1
           fi
-
-      - name: Run promptfoo eval and share
-        run: |
-          PROMPTFOO_REMOTE_API_BASE_URL=http://localhost:3400 PROMPTFOO_REMOTE_APP_BASE_URL=http://localhost:3400 npx promptfoo@latest eval -c .github/promptfooconfig.yml --share
-      
+      - name: Run promptfoo evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          config: '.github/promptfooconfig.yaml'
 
       - name: Stop and remove Docker container
         if: always()
